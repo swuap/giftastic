@@ -4,7 +4,7 @@ var animals = ["dog", "cat", "fish", "bird"];
 function renderButtons () {
     $("#buttons").empty();
     for (var i = 0; i < animals.length; i++){
-        var button = $('<button>');
+        var button = $('<button type="button" class="btn btn-primary"></button>');
         button.attr("id", animals[i]);
         button.attr("class", "animalButton");
         button.text(animals[i]);
@@ -22,6 +22,7 @@ $("#button-addon2").on("click", function(){
     renderButtons();
 });
 
+//This code is querying the giphy API and then creating divs/imgs with the data from the API
 function queryGiphy (id) {
     queryAnimal = id;
     var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=cm4FGvyOUua1vc66K0nzgJCX8w9HXRPy&q=" + queryAnimal + "&limit=10&offset=0&rating=R&lang=en";
@@ -35,13 +36,19 @@ function queryGiphy (id) {
         var results = response.data;
 
         for (var i = 0; i < results.length; i++) {
-            var gifDiv = $("<div>");
+            var gifDiv = $("<span>");
             var p = $("<p>").text("Rating: " + results[i].rating);
             var gifImage = $("<img>");
-            gifImage.attr("src", results[i].images.fixed_height.url);
-            gifDiv.append(p);
+            gifImage.attr("src", results[i].images.fixed_height_still.url);
             gifDiv.append(gifImage);
+            gifDiv.append(p);
             $("#gifs").prepend(gifDiv);
+            
+            // This code is adding the pause functionality to the gifs
+            gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+            gifImage.attr("data-animate", results[i].images.fixed_height.url);
+            gifImage.attr("class", "gif");
+            gifImage.attr("data-state", "still");
     }
     });
 };
@@ -51,10 +58,17 @@ $(document).on("click", ".animalButton", function(){
     queryGiphy($(this).attr("id"));
 });
 
-//This will work for non dynamically created things - this only works based on objects in the document when the html is originally loaded
-// $(".animalButton").on("click", function(){
-//     queryGiphy($(this).attr("id"));
-// });
+//This event handler is allowing the gifs to be paused when clicked
+$(document).on("click", ".gif", function(){
+    var state = $(this).attr("data-state");
 
+    if(state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+    } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+    }
+});
 
 // API key: cm4FGvyOUua1vc66K0nzgJCX8w9HXRPy
