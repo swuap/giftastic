@@ -4,7 +4,7 @@ var animals = ["dog", "cat", "fish", "bird"];
 function renderButtons () {
     $("#buttons").empty();
     for (var i = 0; i < animals.length; i++){
-        var button = $('<button type="button" class="btn btn-primary"></button>');
+        var button = $("<button>");
         button.attr("id", animals[i]);
         button.attr("class", "animalButton");
         button.text(animals[i]);
